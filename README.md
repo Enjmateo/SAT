@@ -1,0 +1,13 @@
+- This library aims at modelling sat problems following the DIMACS CNF format
+- It can be used to run a solver and to print the solutions (if any) in a user-friendly format
+- Install a sat solver then update its path in students_lib.py
+- I highly recommend to install the kissat solver https://github.com/arminbiere/kissat
+- The library is implemented in the students_lib.py file 
+- The variables and the clauses of the model should be declared using the 'model' class 
+- A number of functions are provided to help the encoding of standard constraints
+- A running example is given in example1.py
+- To test example1.py: simply run 
+- python3 example1.py
+- Take some time to understand the library
+- You are supposed to complete the students_lib.py file to encode the at least k constraint
+- Use example2.py to test you encoding 
