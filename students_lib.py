@@ -110,7 +110,10 @@ def encode_atmost_one (m,x) :
 #encode sum of x_ >= k in the model m
 def encode_sum_at_least (m,x,k):
     #if k =1 then use disjunction
-    assert (k>1)
+    if (k==1):
+        m.addcls(encode_clause(x))
+        return
+
     y=[]
     
     for j in range(k+1):
@@ -120,7 +123,6 @@ def encode_sum_at_least (m,x,k):
     #https://siala.github.io/teaching/2022-2023/SAT_SDBD.pdf  p33
 
     n = len(x)
-
     #y0_1 = 1
     m.addcls(always_true(y[0][0]))
     #y1_1 = x1(x[0])
@@ -159,8 +161,59 @@ def encode_sum_at_least (m,x,k):
       
     return y
 
+def encode_sum_at_most(m, x, k):
+    k=k+1
+    y=[]
+    
+    for j in range(k+1):
+        y.append(m.define_new_list(len(x)))
+        
+    #To Complete Below 
+    #https://siala.github.io/teaching/2022-2023/SAT_SDBD.pdf  p33
+
+    n = len(x)
+    #y0_1 = 1
+    m.addcls(always_true(y[0][0]))
+    #y1_1 = x1(x[0])
+    m.addcls(encode_implication(x[0],y[1][0]))
+    #y2_1 = 0
+    m.addcls(always_false(y[1][0]))
+    #yk_n = 1
+    m.addcls(always_false(y[k][n-1]))
+    
+
+    #Vertical relationship:
+    for i in range(0,n):
+        for z in range(0,k):
+            m.addcls(encode_implication(y[z+1][i],y[z][i]))
+
+    #Horizontal relationship:
+    for i in range(0,n-1):
+        for z in range(0,k+1):
+            m.addcls(encode_implication(y[z][i],y[z][i+1]))
 
     
+    for i in range(1,n):
+        for z in range(0,k):
+            #Bound the shape:
+            m.addcls(encode_implication(-y[z][i-1],-y[z+1][i]))
+
+            #Increment the count:
+            #(A ET B => C) == (-A ET -B ET C) 
+            clause = [-y[z][i-1],-x[i],y[z+1][i]]
+            m.addcls(encode_clause(clause))
+
+        for z in range(0,k+1):
+            #Do not Increment:
+            clause = [y[z][i-1],x[i],-y[z][i]]
+            m.addcls(encode_clause(clause))
+      
+    return y
+
+def encode_sum_at_most(m, x, k):
+    return
+
+
 #print the solution values of a given list of variables
 def print_solution_values(sol,variables) : 
     for x in variables: 
@@ -170,8 +223,7 @@ def print_solution_values(sol,variables) :
         print (' ' + str(v)  , end = '')
     
     print()
-    
-    
+
 #print the solution value of a given variable
 def value_of(sol,variable) : 
         v=1
